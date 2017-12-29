@@ -20,9 +20,11 @@ package com.taiter.ce.Enchantments.Tool;
 
 
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -30,6 +32,8 @@ import org.bukkit.inventory.ItemStack;
 
 import com.taiter.ce.Enchantments.CEnchantment;
 import org.bukkit.inventory.PlayerInventory;
+
+import java.util.Random;
 
 
 public class Smelting extends CEnchantment {
@@ -79,9 +83,9 @@ public class Smelting extends CEnchantment {
 					case IRON_INGOT:
 					case GOLD_INGOT:
 						b.setType(Material.DIAMOND_ORE);
-						itemToDrop = new ItemStack(drop, b.getDrops(mainHand).size());//simulate this block as a diamond block. (as we already set the new drop)
+						int quantity = quantityDroppedWithBonus(mainHand.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS),new Random());
+						itemToDrop = new ItemStack(drop, quantity);
 						itemToDrop.setDurability(dur);
-//						itemToDrop.setType(m); //don't know whether this line matters. I think it won't.
 						break;
 					default:
 						itemToDrop = new ItemStack(drop, event.getBlock().getDrops(mainHand).size()); //Prevents unallowed tool usage (Wooden Pickaxe -> Diamond Ore)
@@ -89,7 +93,7 @@ public class Smelting extends CEnchantment {
 						break;
 				}
 				event.setCancelled(true);
-				player.getWorld().dropItemNaturally(b.getLocation(), itemToDrop);
+				player.getWorld().dropItem(b.getLocation(), itemToDrop); //dropItemNaturally() has a random offset, which is not good :(
 				player.getWorld().playEffect(b.getLocation(), Effect.MOBSPAWNER_FLAMES, 12);
 				b.setType(Material.AIR);
 			}
@@ -101,5 +105,47 @@ public class Smelting extends CEnchantment {
 	@Override
 	public void initConfigEntries() {
 	}
-	
+
+	//copied from decompiled Minecraft codes
+//	public int quantityDroppedWithBonus(int fortune, Random random)
+//	{
+//		if (fortune > 0 && Item.getItemFromBlock(this) //得到方块对应的物品
+// != this.getItemDropped( //对应的掉落（比如钻石矿掉钻石）
+// (IBlockState)this.getBlockState().getValidStates().iterator().next() //没用到的参数
+// , random, fortune))
+//		{
+//			int i = random.nextInt(fortune + 2) - 1;
+//
+//			if (i < 0)
+//			{
+//				i = 0;
+//			}
+//
+//			return this.quantityDropped(random) * (i + 1); //处理青金石掉落数量
+//		}
+//		else
+//		{
+//			return this.quantityDropped(random);
+//		}
+//	}
+
+	//custom version
+	public int quantityDroppedWithBonus(int fortune, Random random)
+	{
+		if (fortune > 0)
+		{
+			int i = random.nextInt(fortune + 2) - 1;
+
+			if (i < 0)
+			{
+				i = 0;
+			}
+
+			return i + 1;
+		}
+		else
+		{
+			return 1;
+		}
+	}
 }
