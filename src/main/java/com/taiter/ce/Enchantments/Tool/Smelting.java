@@ -29,7 +29,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.taiter.ce.Enchantments.CEnchantment;
-import org.bukkit.inventory.PlayerInventory;
+
 
 
 public class Smelting extends CEnchantment {
@@ -73,21 +73,8 @@ public class Smelting extends CEnchantment {
 				drop = Material.BRICK;
 			
 			if(drop != null) {
-				PlayerInventory inventory = player.getInventory();
-				ItemStack mainHand = inventory.getItemInMainHand();
-				switch (drop){
-					case IRON_INGOT:
-					case GOLD_INGOT:
-						b.setType(Material.DIAMOND_ORE);
-						itemToDrop = new ItemStack(drop, b.getDrops(mainHand).size());//simulate this block as a diamond block. (as we already set the new drop)
-						itemToDrop.setDurability(dur);
-//						itemToDrop.setType(m); //don't know whether this line matters. I think it won't.
-						break;
-					default:
-						itemToDrop = new ItemStack(drop, event.getBlock().getDrops(mainHand).size()); //Prevents unallowed tool usage (Wooden Pickaxe -> Diamond Ore)
-						itemToDrop.setDurability(dur);
-						break;
-				}
+				itemToDrop = new ItemStack(drop, event.getBlock().getDrops(player.getItemInHand()).size()); //Prevents unallowed tool usage (Wooden Pickaxe -> Diamond Ore)
+				itemToDrop.setDurability(dur);
 				event.setCancelled(true);
 				player.getWorld().dropItemNaturally(b.getLocation(), itemToDrop);
 				player.getWorld().playEffect(b.getLocation(), Effect.MOBSPAWNER_FLAMES, 12);
