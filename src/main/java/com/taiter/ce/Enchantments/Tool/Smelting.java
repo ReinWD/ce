@@ -106,36 +106,12 @@ public class Smelting extends CEnchantment {
 	public void initConfigEntries() {
 	}
 
-	//copied from decompiled Minecraft codes
-//	public int quantityDroppedWithBonus(int fortune, Random random)
-//	{
-//		if (fortune > 0 && Item.getItemFromBlock(this) //得到方块对应的物品
-// != this.getItemDropped( //对应的掉落（比如钻石矿掉钻石）
-// (IBlockState)this.getBlockState().getValidStates().iterator().next() //没用到的参数
-// , random, fortune))
-//		{
-//			int i = random.nextInt(fortune + 2) - 1;
-//
-//			if (i < 0)
-//			{
-//				i = 0;
-//			}
-//
-//			return this.quantityDropped(random) * (i + 1); //处理青金石掉落数量
-//		}
-//		else
-//		{
-//			return this.quantityDropped(random);
-//		}
-//	}
-
 	//custom version
 	public int quantityDroppedWithBonus(int fortune, Random random)
 	{
 		if (fortune > 0)
 		{
 			int i = random.nextInt(fortune + 2) - 1;
-
 			if (i < 0)
 			{
 				i = 0;
